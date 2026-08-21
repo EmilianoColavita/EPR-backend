@@ -3,6 +3,7 @@ package com.epr.backend.service.impl;
 import com.epr.backend.dto.request.UsuarioCreateRequest;
 import com.epr.backend.dto.request.UsuarioUpdateRequest;
 import com.epr.backend.dto.response.UsuarioResponse;
+import com.epr.backend.entity.Rol;
 import com.epr.backend.entity.Usuario;
 import com.epr.backend.exception.BadRequestException;
 import com.epr.backend.exception.ResourceNotFoundException;
@@ -23,8 +24,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UsuarioResponse> listar() {
-        return usuarioRepository.findAll().stream()
+    public List<UsuarioResponse> listar(Rol rol) {
+        List<Usuario> usuarios = rol == null ? usuarioRepository.findAll() : usuarioRepository.findByRol(rol);
+        return usuarios.stream()
                 .map(UsuarioMapper::toResponse)
                 .toList();
     }
@@ -75,6 +77,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setRol(request.rol());
         usuario.setActivo(request.activo());
 
+        return UsuarioMapper.toResponse(usuarioRepository.save(usuario));
+    }
+
+    @Override
+    public UsuarioResponse actualizarActivo(Long id, boolean activo) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setActivo(activo);
         return UsuarioMapper.toResponse(usuarioRepository.save(usuario));
     }
 

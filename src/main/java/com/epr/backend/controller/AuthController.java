@@ -3,6 +3,7 @@ package com.epr.backend.controller;
 import com.epr.backend.dto.request.LoginRequest;
 import com.epr.backend.dto.request.RegisterRequest;
 import com.epr.backend.dto.response.LoginResponse;
+import com.epr.backend.dto.response.UsuarioResponse;
 import com.epr.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UsuarioResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 

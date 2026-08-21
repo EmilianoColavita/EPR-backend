@@ -1,5 +1,6 @@
 package com.epr.backend.config;
 
+import com.epr.backend.security.JwtAuthenticationEntryPoint;
 import com.epr.backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,17 +35,19 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/planes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/evaluaciones").permitAll()
                         .requestMatchers("/api/v1/usuarios/me").authenticated()
-                        .requestMatchers("/api/v1/usuarios/**").hasAnyRole("ADMIN", "ENTRENADOR")
+                        .requestMatchers("/api/v1/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/rutinas/mias").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/rutinas/**").hasAnyRole("ADMIN", "ENTRENADOR")
                         .requestMatchers("/api/v1/planes/**").hasAnyRole("ADMIN", "ENTRENADOR")
                         .requestMatchers("/api/v1/evaluaciones/**").hasAnyRole("ADMIN", "ENTRENADOR")
+                        .requestMatchers("/api/v1/cuotas/mi-estado").hasRole("ALUMNO")
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

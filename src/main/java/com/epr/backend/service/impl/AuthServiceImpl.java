@@ -3,6 +3,7 @@ package com.epr.backend.service.impl;
 import com.epr.backend.dto.request.LoginRequest;
 import com.epr.backend.dto.request.RegisterRequest;
 import com.epr.backend.dto.response.LoginResponse;
+import com.epr.backend.dto.response.UsuarioResponse;
 import com.epr.backend.entity.Rol;
 import com.epr.backend.entity.Usuario;
 import com.epr.backend.exception.BadRequestException;
@@ -28,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserDetailsService userDetailsService;
 
     @Override
-    public LoginResponse register(RegisterRequest request) {
+    public UsuarioResponse register(RegisterRequest request) {
         if (usuarioRepository.existsByEmail(request.email())) {
             throw new BadRequestException("Ya existe un usuario con ese email");
         }
@@ -40,13 +41,12 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .telefono(request.telefono())
                 .rol(Rol.ALUMNO)
-                .activo(true)
+                .activo(false)
                 .build();
 
         usuarioRepository.save(usuario);
 
-        String token = jwtService.generateToken(userDetailsService.loadUserByUsername(usuario.getEmail()));
-        return new LoginResponse(token, UsuarioMapper.toResponse(usuario));
+        return UsuarioMapper.toResponse(usuario);
     }
 
     @Override
