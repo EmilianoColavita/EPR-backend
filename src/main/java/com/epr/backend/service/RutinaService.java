@@ -1,22 +1,29 @@
 package com.epr.backend.service;
 
+import com.epr.backend.dto.request.AsignarRutinaRequest;
 import com.epr.backend.dto.request.RutinaRequest;
+import com.epr.backend.dto.request.SeleccionarDiaRequest;
+import com.epr.backend.dto.response.RutinaListItemResponse;
+import com.epr.backend.dto.response.RutinaMiaResponse;
 import com.epr.backend.dto.response.RutinaResponse;
 
 import java.util.List;
 
 public interface RutinaService {
-    List<RutinaResponse> listarTodas();
 
-    List<RutinaResponse> listarPorAlumno(Long alumnoId);
+    List<RutinaListItemResponse> listar();
 
-    List<RutinaResponse> listarPorEmailAlumno(String email);
+    RutinaResponse crear(RutinaRequest request);
 
-    RutinaResponse obtenerPorId(Long id);
+    RutinaResponse obtenerPorId(Long rutinaId);
 
-    RutinaResponse crear(RutinaRequest request, String emailCreador);
+    RutinaResponse actualizar(Long rutinaId, RutinaRequest request);
 
-    RutinaResponse actualizar(Long id, RutinaRequest request);
+    RutinaMiaResponse asignar(Long rutinaId, AsignarRutinaRequest request);
 
-    void eliminar(Long id);
+    RutinaMiaResponse obtenerPorAlumno(Long alumnoId);
+
+    RutinaMiaResponse obtenerMia(String emailAlumno);
+
+    RutinaMiaResponse seleccionarDia(String emailAlumno, SeleccionarDiaRequest request);
 }

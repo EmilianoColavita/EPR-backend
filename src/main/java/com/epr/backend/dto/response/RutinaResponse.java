@@ -7,12 +7,8 @@ public record RutinaResponse(
         Long id,
         String nombre,
         String descripcion,
-        Long alumnoId,
-        String alumnoNombre,
-        Long creadoPorId,
-        boolean activa,
         LocalDateTime fechaCreacion,
         LocalDateTime fechaActualizacion,
-        List<EjercicioResponse> ejercicios
+        List<DiaRutinaResponse> dias
 ) {
 }

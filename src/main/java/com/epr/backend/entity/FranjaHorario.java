@@ -2,6 +2,8 @@ package com.epr.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,36 +17,34 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalTime;
+
 @Entity
-@Table(name = "ejercicios")
+@Table(name = "franjas_horario")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ejercicio {
+public class FranjaHorario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dia_id", nullable = false)
-    private DiaRutina dia;
+    @JoinColumn(name = "horario_asignado_id", nullable = false)
+    private HorarioAsignado horarioAsignado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DiaSemana diaSemana;
 
     @Column(nullable = false)
-    private String nombre;
+    private LocalTime horaInicio;
 
-    private Integer series;
+    private LocalTime horaFin;
 
-    private String repeticiones;
-
-    private String pesoSugerido;
-
-    private Integer descansoSegundos;
-
-    @Column(columnDefinition = "TEXT")
-    private String notas;
-
-    private Integer orden;
+    @Column(nullable = false)
+    private String actividad;
 }
