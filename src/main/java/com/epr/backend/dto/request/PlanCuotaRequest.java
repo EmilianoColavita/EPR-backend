@@ -1,0 +1,15 @@
+package com.epr.backend.dto.request;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+import java.math.BigDecimal;
+
+public record PlanCuotaRequest(
+        @NotBlank String nombre,
+        @NotNull @Positive Integer duracionDias,
+        @DecimalMin(value = "0", inclusive = true) BigDecimal precio
+) {
+}

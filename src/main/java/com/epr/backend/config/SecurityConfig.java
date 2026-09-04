@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/usuarios/me").authenticated()
                         .requestMatchers("/api/v1/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/alumnos/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/planes-cuota/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/rutinas/mia", "/api/v1/rutinas/mia/**").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/rutinas/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/turnos/mios").hasRole("ALUMNO")
@@ -52,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/evaluaciones/mias", "/api/v1/evaluaciones/mias/**").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/evaluaciones/**").hasAnyRole("ADMIN", "ENTRENADOR")
                         .requestMatchers("/api/v1/cuotas/mi-estado").hasRole("ALUMNO")
+                        .requestMatchers("/api/v1/cuotas/resumen").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
