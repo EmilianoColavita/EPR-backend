@@ -1,5 +1,6 @@
 package com.epr.backend.config;
 
+import com.epr.backend.security.JwtAccessDeniedHandler;
 import com.epr.backend.security.JwtAuthenticationEntryPoint;
 import com.epr.backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +37,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
@@ -44,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/usuarios/me").authenticated()
                         .requestMatchers("/api/v1/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/alumnos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/planes-cuota").hasAnyRole("ADMIN", "ALUMNO")
                         .requestMatchers("/api/v1/planes-cuota/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/rutinas/mia", "/api/v1/rutinas/mia/**").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/rutinas/**").hasRole("ADMIN")
@@ -54,6 +59,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/evaluaciones/**").hasAnyRole("ADMIN", "ENTRENADOR")
                         .requestMatchers("/api/v1/cuotas/mi-estado").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/cuotas/resumen").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/comprobantes-pago").hasRole("ALUMNO")
+                        .requestMatchers("/api/v1/comprobantes-pago/mios", "/api/v1/comprobantes-pago/mios/**").hasRole("ALUMNO")
+                        .requestMatchers("/api/v1/comprobantes-pago", "/api/v1/comprobantes-pago/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
