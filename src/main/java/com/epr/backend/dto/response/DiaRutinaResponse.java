@@ -6,6 +6,6 @@ public record DiaRutinaResponse(
         Long id,
         Integer numero,
         String nombre,
-        List<EjercicioResponse> ejercicios
+        List<BloqueRutinaResponse> bloques
 ) {
 }

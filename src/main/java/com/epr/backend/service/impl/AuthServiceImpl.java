@@ -11,6 +11,7 @@ import com.epr.backend.mapper.UsuarioMapper;
 import com.epr.backend.repository.UsuarioRepository;
 import com.epr.backend.security.JwtService;
 import com.epr.backend.service.AuthService;
+import com.epr.backend.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final NotificacionService notificacionService;
 
     @Override
     public UsuarioResponse register(RegisterRequest request) {
@@ -45,6 +47,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         usuarioRepository.save(usuario);
+
+        String mensaje = usuario.getNombre() + " " + usuario.getApellido() + " se registró y espera aprobación.";
+        usuarioRepository.findByRol(Rol.ADMIN).forEach(admin ->
+                notificacionService.crear(admin, "Nuevo alumno registrado", mensaje, "/panel/admin/alumnos"));
 
         return UsuarioMapper.toResponse(usuario);
     }

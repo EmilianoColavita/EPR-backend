@@ -11,6 +11,7 @@ import com.epr.backend.mapper.EvaluacionMapper;
 import com.epr.backend.repository.EvaluacionRepository;
 import com.epr.backend.repository.UsuarioRepository;
 import com.epr.backend.service.EvaluacionService;
+import com.epr.backend.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class EvaluacionServiceImpl implements EvaluacionService {
 
     private final EvaluacionRepository evaluacionRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacionService notificacionService;
 
     @Override
     @Transactional
@@ -42,7 +44,12 @@ public class EvaluacionServiceImpl implements EvaluacionService {
                 .archivo(leerBytes(archivo))
                 .build();
 
-        return EvaluacionMapper.toResponse(evaluacionRepository.save(evaluacion));
+        EvaluacionResponse response = EvaluacionMapper.toResponse(evaluacionRepository.save(evaluacion));
+
+        notificacionService.crear(alumno, "Nueva evaluación disponible",
+                "Tu entrenador subió una nueva evaluación. Ya la podés descargar.", "/panel/alumno/evaluaciones");
+
+        return response;
     }
 
     @Override

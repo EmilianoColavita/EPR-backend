@@ -1,13 +1,16 @@
 package com.epr.backend.mapper;
 
+import com.epr.backend.dto.request.BloqueRutinaRequest;
 import com.epr.backend.dto.request.DiaRutinaRequest;
 import com.epr.backend.dto.request.EjercicioRequest;
+import com.epr.backend.dto.response.BloqueRutinaResponse;
 import com.epr.backend.dto.response.DiaRutinaResponse;
 import com.epr.backend.dto.response.EjercicioResponse;
 import com.epr.backend.dto.response.RutinaListItemResponse;
 import com.epr.backend.dto.response.RutinaMiaResponse;
 import com.epr.backend.dto.response.RutinaResponse;
 import com.epr.backend.entity.AsignacionRutina;
+import com.epr.backend.entity.BloqueRutina;
 import com.epr.backend.entity.DiaRutina;
 import com.epr.backend.entity.Ejercicio;
 import com.epr.backend.entity.Rutina;
@@ -27,8 +30,24 @@ public class RutinaMapper {
                 .pesoSugerido(request.pesoSugerido())
                 .descansoSegundos(request.descansoSegundos())
                 .notas(request.notas())
+                .videoUrl(request.videoUrl())
                 .orden(request.orden())
                 .build();
+    }
+
+    public static BloqueRutina toEntity(BloqueRutinaRequest request) {
+        BloqueRutina bloque = BloqueRutina.builder()
+                .numero(request.numero())
+                .nombre(request.nombre())
+                .build();
+
+        if (request.ejercicios() != null) {
+            for (EjercicioRequest ejercicioRequest : request.ejercicios()) {
+                bloque.addEjercicio(toEntity(ejercicioRequest));
+            }
+        }
+
+        return bloque;
     }
 
     public static DiaRutina toEntity(DiaRutinaRequest request) {
@@ -37,9 +56,9 @@ public class RutinaMapper {
                 .nombre(request.nombre())
                 .build();
 
-        if (request.ejercicios() != null) {
-            for (EjercicioRequest ejercicioRequest : request.ejercicios()) {
-                dia.addEjercicio(toEntity(ejercicioRequest));
+        if (request.bloques() != null) {
+            for (BloqueRutinaRequest bloqueRequest : request.bloques()) {
+                dia.addBloque(toEntity(bloqueRequest));
             }
         }
 
@@ -55,12 +74,26 @@ public class RutinaMapper {
                 ejercicio.getPesoSugerido(),
                 ejercicio.getDescansoSegundos(),
                 ejercicio.getNotas(),
+                ejercicio.getVideoUrl(),
                 ejercicio.getOrden()
         );
     }
 
+    public static BloqueRutinaResponse toResponse(BloqueRutina bloque) {
+        List<EjercicioResponse> ejercicios = bloque.getEjercicios().stream()
+                .map(RutinaMapper::toResponse)
+                .toList();
+
+        return new BloqueRutinaResponse(
+                bloque.getId(),
+                bloque.getNumero(),
+                bloque.getNombre(),
+                ejercicios
+        );
+    }
+
     public static DiaRutinaResponse toResponse(DiaRutina dia) {
-        List<EjercicioResponse> ejercicios = dia.getEjercicios().stream()
+        List<BloqueRutinaResponse> bloques = dia.getBloques().stream()
                 .map(RutinaMapper::toResponse)
                 .toList();
 
@@ -68,7 +101,7 @@ public class RutinaMapper {
                 dia.getId(),
                 dia.getNumero(),
                 dia.getNombre(),
-                ejercicios
+                bloques
         );
     }
 

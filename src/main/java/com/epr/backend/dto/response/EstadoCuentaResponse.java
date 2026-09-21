@@ -4,9 +4,10 @@ import java.time.LocalDate;
 
 public record EstadoCuentaResponse(
         boolean alDia,
-        LocalDate proximoVencimiento
+        LocalDate proximoVencimiento,
+        boolean becado
 ) {
-    public static EstadoCuentaResponse sinCuota() {
-        return new EstadoCuentaResponse(false, null);
+    public static EstadoCuentaResponse sinCuota(boolean becado) {
+        return new EstadoCuentaResponse(false, null, becado);
     }
 }

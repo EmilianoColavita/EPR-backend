@@ -9,6 +9,8 @@ public record PlanGroupResponse(
         Long id,
         String title,
         List<PlanCardResponse> cards,
-        List<String> note
+        List<String> note,
+        Integer orden,
+        Boolean activo
 ) {
 }

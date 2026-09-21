@@ -44,12 +44,12 @@ public class DiaRutina {
     private String nombre;
 
     @OneToMany(mappedBy = "dia", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("orden ASC")
+    @OrderBy("numero ASC")
     @Builder.Default
-    private List<Ejercicio> ejercicios = new ArrayList<>();
+    private List<BloqueRutina> bloques = new ArrayList<>();
 
-    public void addEjercicio(Ejercicio ejercicio) {
-        ejercicios.add(ejercicio);
-        ejercicio.setDia(this);
+    public void addBloque(BloqueRutina bloque) {
+        bloques.add(bloque);
+        bloque.setDia(this);
     }
 }

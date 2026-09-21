@@ -2,6 +2,7 @@ package com.epr.backend.dto.response;
 
 import com.epr.backend.entity.Rol;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record UsuarioResponse(
@@ -12,6 +13,9 @@ public record UsuarioResponse(
         String telefono,
         Rol rol,
         boolean activo,
-        LocalDateTime fechaRegistro
+        LocalDateTime fechaRegistro,
+        boolean becado,
+        boolean alDia,
+        LocalDate fechaVencimiento
 ) {
 }

@@ -12,4 +12,6 @@ public interface SolicitudEvaluacionService {
     List<SolicitudEvaluacionResponse> listar();
 
     SolicitudEvaluacionResponse actualizarEstado(Long id, EstadoSolicitudRequest request);
+
+    void eliminar(Long id);
 }

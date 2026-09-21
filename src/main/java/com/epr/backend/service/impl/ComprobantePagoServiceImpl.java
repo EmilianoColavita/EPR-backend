@@ -20,6 +20,7 @@ import com.epr.backend.repository.PlanCuotaRepository;
 import com.epr.backend.repository.UsuarioRepository;
 import com.epr.backend.service.ComprobantePagoService;
 import com.epr.backend.service.CuotaService;
+import com.epr.backend.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
     private final PlanCuotaRepository planCuotaRepository;
     private final PagoRepository pagoRepository;
     private final CuotaService cuotaService;
+    private final NotificacionService notificacionService;
 
     @Override
     @Transactional
@@ -137,7 +139,12 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
         comprobante.setFecha(pago.getFecha());
         comprobante.setMonto(pago.getMonto());
 
-        return ComprobantePagoMapper.toResponse(comprobantePagoRepository.save(comprobante));
+        ComprobantePagoResponse response = ComprobantePagoMapper.toResponse(comprobantePagoRepository.save(comprobante));
+
+        notificacionService.crear(comprobante.getAlumno(), "Pago confirmado",
+                "Tu pago fue confirmado. Tu cuenta está al día.", "/panel/alumno/pagos");
+
+        return response;
     }
 
     @Override
@@ -150,10 +157,18 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
             throw new BadRequestException("El comprobante ya fue procesado");
         }
 
+        String notaRechazo = request != null ? request.nota() : null;
         comprobante.setEstado(EstadoComprobante.RECHAZADO);
-        comprobante.setNotaRechazo(request != null ? request.nota() : null);
+        comprobante.setNotaRechazo(notaRechazo);
 
-        return ComprobantePagoMapper.toResponse(comprobantePagoRepository.save(comprobante));
+        ComprobantePagoResponse response = ComprobantePagoMapper.toResponse(comprobantePagoRepository.save(comprobante));
+
+        String mensaje = (notaRechazo != null && !notaRechazo.isBlank())
+                ? "Tu comprobante fue rechazado. Motivo: " + notaRechazo
+                : "Tu comprobante fue rechazado. Consultá con el administrador para más información.";
+        notificacionService.crear(comprobante.getAlumno(), "Comprobante rechazado", mensaje, "/panel/alumno/pagos");
+
+        return response;
     }
 
     private void validarArchivo(MultipartFile archivo) {

@@ -7,6 +7,7 @@ import com.epr.backend.entity.SolicitudEvaluacion;
 import com.epr.backend.exception.ResourceNotFoundException;
 import com.epr.backend.mapper.SolicitudEvaluacionMapper;
 import com.epr.backend.repository.SolicitudEvaluacionRepository;
+import com.epr.backend.service.EmailService;
 import com.epr.backend.service.SolicitudEvaluacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 public class SolicitudEvaluacionServiceImpl implements SolicitudEvaluacionService {
 
     private final SolicitudEvaluacionRepository solicitudEvaluacionRepository;
+    private final EmailService emailService;
 
     @Override
     public SolicitudEvaluacionResponse crear(SolicitudEvaluacionRequest request) {
@@ -29,7 +31,9 @@ public class SolicitudEvaluacionServiceImpl implements SolicitudEvaluacionServic
                 .fechaPreferida(request.fechaPreferida())
                 .build();
 
-        return SolicitudEvaluacionMapper.toResponse(solicitudEvaluacionRepository.save(solicitud));
+        SolicitudEvaluacionResponse response = SolicitudEvaluacionMapper.toResponse(solicitudEvaluacionRepository.save(solicitud));
+        emailService.enviarConfirmacionSolicitudEvaluacion(response.email(), response.nombreCompleto());
+        return response;
     }
 
     @Override
@@ -45,5 +49,12 @@ public class SolicitudEvaluacionServiceImpl implements SolicitudEvaluacionServic
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
         solicitud.setEstado(request.estado());
         return SolicitudEvaluacionMapper.toResponse(solicitudEvaluacionRepository.save(solicitud));
+    }
+
+    @Override
+    public void eliminar(Long id) {
+        SolicitudEvaluacion solicitud = solicitudEvaluacionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
+        solicitudEvaluacionRepository.delete(solicitud);
     }
 }

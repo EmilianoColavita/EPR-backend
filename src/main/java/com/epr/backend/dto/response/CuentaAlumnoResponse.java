@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public record CuentaAlumnoResponse(
         PlanCuotaResponse planActual,
         LocalDate fechaVencimiento,
-        boolean alDia
+        boolean alDia,
+        boolean becado
 ) {
 }

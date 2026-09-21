@@ -8,6 +8,6 @@ import java.util.List;
 public record DiaRutinaRequest(
         @NotNull Integer numero,
         String nombre,
-        @Valid List<EjercicioRequest> ejercicios
+        @Valid List<BloqueRutinaRequest> bloques
 ) {
 }

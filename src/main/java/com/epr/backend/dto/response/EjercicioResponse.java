@@ -8,6 +8,7 @@ public record EjercicioResponse(
         String pesoSugerido,
         Integer descansoSegundos,
         String notas,
+        String videoUrl,
         Integer orden
 ) {
 }

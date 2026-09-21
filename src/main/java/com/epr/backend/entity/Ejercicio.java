@@ -29,8 +29,8 @@ public class Ejercicio {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dia_id", nullable = false)
-    private DiaRutina dia;
+    @JoinColumn(name = "bloque_id", nullable = false)
+    private BloqueRutina bloque;
 
     @Column(nullable = false)
     private String nombre;
@@ -45,6 +45,9 @@ public class Ejercicio {
 
     @Column(columnDefinition = "TEXT")
     private String notas;
+
+    @Column(columnDefinition = "TEXT")
+    private String videoUrl;
 
     private Integer orden;
 }

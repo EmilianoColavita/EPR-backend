@@ -10,6 +10,8 @@ public record PlanCardResponse(
         Long id,
         String title,
         List<String> items,
-        BigDecimal price
+        BigDecimal price,
+        Integer orden,
+        Boolean activo
 ) {
 }
