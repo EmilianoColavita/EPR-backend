@@ -23,6 +23,8 @@ public interface RutinaService {
 
     RutinaMiaResponse obtenerPorAlumno(Long alumnoId);
 
+    void desasignar(Long alumnoId);
+
     RutinaMiaResponse obtenerMia(String emailAlumno);
 
     RutinaMiaResponse seleccionarDia(String emailAlumno, SeleccionarDiaRequest request);

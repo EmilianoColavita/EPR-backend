@@ -4,6 +4,7 @@ import com.epr.backend.dto.response.RutinaMiaResponse;
 import com.epr.backend.service.RutinaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,5 +20,11 @@ public class AlumnoRutinaController {
     @GetMapping
     public ResponseEntity<RutinaMiaResponse> obtener(@PathVariable Long alumnoId) {
         return ResponseEntity.ok(rutinaService.obtenerPorAlumno(alumnoId));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> desasignar(@PathVariable Long alumnoId) {
+        rutinaService.desasignar(alumnoId);
+        return ResponseEntity.noContent().build();
     }
 }

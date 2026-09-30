@@ -114,6 +114,14 @@ public class RutinaServiceImpl implements RutinaService {
     }
 
     @Override
+    @Transactional
+    public void desasignar(Long alumnoId) {
+        AsignacionRutina asignacion = buscarAsignacionActivaPorAlumno(alumnoId);
+        asignacion.setActiva(false);
+        asignacionRutinaRepository.save(asignacion);
+    }
+
+    @Override
     public RutinaMiaResponse obtenerMia(String emailAlumno) {
         AsignacionRutina asignacion = buscarAsignacionActivaPorAlumno(buscarAlumnoPorEmail(emailAlumno).getId());
         return RutinaMapper.toMiaResponse(asignacion, calcularDiaSugerido(asignacion.getRutina(), asignacion.getUltimoDiaEntrenado()));

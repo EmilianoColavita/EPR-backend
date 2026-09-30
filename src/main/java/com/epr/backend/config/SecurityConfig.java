@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/planes/**").hasAnyRole("ADMIN", "ENTRENADOR")
                         .requestMatchers("/api/v1/evaluaciones/mias", "/api/v1/evaluaciones/mias/**").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/evaluaciones/**").hasAnyRole("ADMIN", "ENTRENADOR")
+                        .requestMatchers("/api/v1/rutinas-pdf/mias", "/api/v1/rutinas-pdf/mias/**").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/cuotas/mi-estado").hasRole("ALUMNO")
                         .requestMatchers("/api/v1/cuotas/resumen").hasRole("ADMIN")
                         .requestMatchers("/api/v1/becas/mia", "/api/v1/becas/mia/**").hasRole("ALUMNO")
