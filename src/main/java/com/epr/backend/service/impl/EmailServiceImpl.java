@@ -20,6 +20,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${epr.mail.from}")
     private String from;
 
+    @Async
     @Override
     public void enviarConfirmacionSolicitudEvaluacion(String email, String nombreCompleto) {
         SimpleMailMessage mensaje = new SimpleMailMessage();
@@ -41,6 +42,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Async
     @Override
     public void enviarCuentaActivada(String email, String nombre) {
         SimpleMailMessage mensaje = new SimpleMailMessage();

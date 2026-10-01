@@ -42,3 +42,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// Solo se genera el jar ejecutable (bootJar): sin el "-plain.jar" el Dockerfile copia un único jar.
+tasks.named('jar') {
+	enabled = false
+}

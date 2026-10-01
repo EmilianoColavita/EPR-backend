@@ -1,5 +1,6 @@
 package com.epr.backend.mapper;
 
+import com.epr.backend.dto.projection.ArchivoAlumnoResumen;
 import com.epr.backend.dto.response.AlumnoResumenResponse;
 import com.epr.backend.dto.response.RutinaPdfArchivoResponse;
 import com.epr.backend.dto.response.RutinaPdfResponse;
@@ -18,6 +19,15 @@ public class RutinaPdfMapper {
                 new AlumnoResumenResponse(alumno.getId(), alumno.getNombre(), alumno.getApellido()),
                 rutinaPdf.getNombreArchivo(),
                 rutinaPdf.getFechaSubida()
+        );
+    }
+
+    public static RutinaPdfResponse toResponse(ArchivoAlumnoResumen resumen) {
+        return new RutinaPdfResponse(
+                resumen.id(),
+                new AlumnoResumenResponse(resumen.alumnoId(), resumen.alumnoNombre(), resumen.alumnoApellido()),
+                resumen.nombreArchivo(),
+                resumen.fechaSubida()
         );
     }
 

@@ -1,5 +1,6 @@
 package com.epr.backend.mapper;
 
+import com.epr.backend.dto.projection.ComprobantePagoResumen;
 import com.epr.backend.dto.response.AlumnoResumenResponse;
 import com.epr.backend.dto.response.ComprobantePagoArchivoResponse;
 import com.epr.backend.dto.response.ComprobantePagoResponse;
@@ -25,6 +26,23 @@ public class ComprobantePagoMapper {
                 comprobante.getPago() != null ? PagoMapper.toResponse(comprobante.getPago()) : null,
                 comprobante.getNotaRechazo(),
                 comprobante.getFechaSubida()
+        );
+    }
+
+    public static ComprobantePagoResponse toResponse(ComprobantePagoResumen c) {
+        Usuario alumno = c.alumno();
+        return new ComprobantePagoResponse(
+                c.id(),
+                new AlumnoResumenResponse(alumno.getId(), alumno.getNombre(), alumno.getApellido()),
+                c.nombreArchivo(),
+                c.contentType(),
+                c.fecha(),
+                c.planCuota() != null ? PlanCuotaMapper.toResponse(c.planCuota()) : null,
+                c.monto(),
+                c.estado(),
+                c.pago() != null ? PagoMapper.toResponse(c.pago()) : null,
+                c.notaRechazo(),
+                c.fechaSubida()
         );
     }
 

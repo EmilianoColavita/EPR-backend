@@ -109,7 +109,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new BadRequestException(TOKEN_INVALIDO);
         }
 
-        usuario.setPassword(passwordEncoder.encode(request.password()));
+        // Cambia la contraseña e invalida los tokens emitidos antes (cierra las otras sesiones).
+        usuario.cambiarPassword(passwordEncoder.encode(request.password()));
         usuarioRepository.save(usuario);
     }
 

@@ -1,0 +1,14 @@
+.git
+.gradle
+.idea
+.vscode
+.claude
+build
+bin
+out
+*.iml
+.env
+.env.*
+!.env.example
+HELP.md
+*.zip

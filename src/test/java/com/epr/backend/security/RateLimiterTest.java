@@ -42,4 +42,14 @@ class RateLimiterTest {
 
         assertEquals(0, limiter.intentar("a", 1, ventana));
     }
+
+    @Test
+    void reiniciarLiberaLaClave() {
+        Duration ventana = Duration.ofMinutes(60);
+        limiter.intentar("r", 1, ventana);
+        assertTrue(limiter.intentar("r", 1, ventana) > 0);
+
+        limiter.reiniciar("r");
+        assertEquals(0, limiter.intentar("r", 1, ventana));
+    }
 }

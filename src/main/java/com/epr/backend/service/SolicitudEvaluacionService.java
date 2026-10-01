@@ -7,7 +7,7 @@ import com.epr.backend.dto.response.SolicitudEvaluacionResponse;
 import java.util.List;
 
 public interface SolicitudEvaluacionService {
-    SolicitudEvaluacionResponse crear(SolicitudEvaluacionRequest request);
+    SolicitudEvaluacionResponse crear(SolicitudEvaluacionRequest request, String ipCliente);
 
     List<SolicitudEvaluacionResponse> listar();
 

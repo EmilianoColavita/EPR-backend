@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
-        @NotBlank String nombre,
-        @NotBlank String apellido,
-        @NotBlank @Email String email,
-        @NotBlank @Size(min = 6) String password,
-        String telefono
+        @NotBlank @Size(max = 100, message = "El nombre no puede superar los 100 caracteres") String nombre,
+        @NotBlank @Size(max = 100, message = "El apellido no puede superar los 100 caracteres") String apellido,
+        @NotBlank @Email @Size(max = 150, message = "El email no puede superar los 150 caracteres") String email,
+        @NotBlank @Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres") String password,
+        @Size(max = 30, message = "El teléfono no puede superar los 30 caracteres") String telefono
 ) {
 }

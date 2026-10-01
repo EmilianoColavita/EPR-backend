@@ -1,5 +1,6 @@
 package com.epr.backend.mapper;
 
+import com.epr.backend.dto.projection.ArchivoAlumnoResumen;
 import com.epr.backend.dto.response.AlumnoResumenResponse;
 import com.epr.backend.dto.response.EvaluacionArchivoResponse;
 import com.epr.backend.dto.response.EvaluacionResponse;
@@ -18,6 +19,15 @@ public class EvaluacionMapper {
                 new AlumnoResumenResponse(alumno.getId(), alumno.getNombre(), alumno.getApellido()),
                 evaluacion.getNombreArchivo(),
                 evaluacion.getFechaSubida()
+        );
+    }
+
+    public static EvaluacionResponse toResponse(ArchivoAlumnoResumen resumen) {
+        return new EvaluacionResponse(
+                resumen.id(),
+                new AlumnoResumenResponse(resumen.alumnoId(), resumen.alumnoNombre(), resumen.alumnoApellido()),
+                resumen.nombreArchivo(),
+                resumen.fechaSubida()
         );
     }
 

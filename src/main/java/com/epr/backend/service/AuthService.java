@@ -6,7 +6,7 @@ import com.epr.backend.dto.response.LoginResponse;
 import com.epr.backend.dto.response.UsuarioResponse;
 
 public interface AuthService {
-    UsuarioResponse register(RegisterRequest request);
+    UsuarioResponse register(RegisterRequest request, String ipCliente);
 
-    LoginResponse login(LoginRequest request);
+    LoginResponse login(LoginRequest request, String ipCliente);
 }

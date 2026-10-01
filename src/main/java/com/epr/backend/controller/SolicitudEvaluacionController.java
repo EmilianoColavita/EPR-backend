@@ -4,6 +4,7 @@ import com.epr.backend.dto.request.EstadoSolicitudRequest;
 import com.epr.backend.dto.request.SolicitudEvaluacionRequest;
 import com.epr.backend.dto.response.SolicitudEvaluacionResponse;
 import com.epr.backend.service.SolicitudEvaluacionService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,10 @@ public class SolicitudEvaluacionController {
     private final SolicitudEvaluacionService solicitudEvaluacionService;
 
     @PostMapping
-    public ResponseEntity<SolicitudEvaluacionResponse> crear(@Valid @RequestBody SolicitudEvaluacionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitudEvaluacionService.crear(request));
+    public ResponseEntity<SolicitudEvaluacionResponse> crear(@Valid @RequestBody SolicitudEvaluacionRequest request,
+                                                             HttpServletRequest httpRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(solicitudEvaluacionService.crear(request, httpRequest.getRemoteAddr()));
     }
 
     @GetMapping

@@ -12,20 +12,21 @@ import com.epr.backend.repository.EvaluacionRepository;
 import com.epr.backend.repository.UsuarioRepository;
 import com.epr.backend.service.EvaluacionService;
 import com.epr.backend.service.NotificacionService;
+import com.epr.backend.util.ArchivoSubido;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class EvaluacionServiceImpl implements EvaluacionService {
 
-    private static final String CONTENT_TYPE_PDF = "application/pdf";
+    private static final long TAMANIO_MAXIMO_BYTES = 15L * 1024 * 1024;
 
     private final EvaluacionRepository evaluacionRepository;
     private final UsuarioRepository usuarioRepository;
@@ -35,13 +36,14 @@ public class EvaluacionServiceImpl implements EvaluacionService {
     @Transactional
     public EvaluacionResponse subir(Long alumnoId, MultipartFile archivo) {
         Usuario alumno = buscarAlumno(alumnoId);
-        validarArchivo(archivo);
+        ArchivoSubido.Contenido contenido = ArchivoSubido.leerYValidar(
+                archivo, Set.of(ArchivoSubido.PDF), TAMANIO_MAXIMO_BYTES, "El archivo debe ser un PDF");
 
         Evaluacion evaluacion = Evaluacion.builder()
                 .alumno(alumno)
-                .nombreArchivo(archivo.getOriginalFilename())
-                .contentType(archivo.getContentType())
-                .archivo(leerBytes(archivo))
+                .nombreArchivo(ArchivoSubido.nombreSeguro(archivo.getOriginalFilename(), "evaluacion.pdf"))
+                .contentType(contenido.contentType())
+                .archivo(contenido.bytes())
                 .build();
 
         EvaluacionResponse response = EvaluacionMapper.toResponse(evaluacionRepository.save(evaluacion));
@@ -55,7 +57,7 @@ public class EvaluacionServiceImpl implements EvaluacionService {
     @Override
     public List<EvaluacionResponse> listarPorAlumno(Long alumnoId) {
         buscarAlumno(alumnoId);
-        return evaluacionRepository.findByAlumnoId(alumnoId).stream()
+        return evaluacionRepository.listarResumenPorAlumnoId(alumnoId).stream()
                 .map(EvaluacionMapper::toResponse)
                 .toList();
     }
@@ -77,7 +79,7 @@ public class EvaluacionServiceImpl implements EvaluacionService {
 
     @Override
     public List<EvaluacionResponse> listarMias(String emailAlumno) {
-        return evaluacionRepository.findByAlumnoEmail(emailAlumno).stream()
+        return evaluacionRepository.listarResumenPorAlumnoEmail(emailAlumno).stream()
                 .map(EvaluacionMapper::toResponse)
                 .toList();
     }
@@ -92,23 +94,6 @@ public class EvaluacionServiceImpl implements EvaluacionService {
         }
 
         return EvaluacionMapper.toArchivoResponse(evaluacion);
-    }
-
-    private void validarArchivo(MultipartFile archivo) {
-        if (archivo == null || archivo.isEmpty()) {
-            throw new BadRequestException("El archivo es requerido");
-        }
-        if (!CONTENT_TYPE_PDF.equalsIgnoreCase(archivo.getContentType())) {
-            throw new BadRequestException("El archivo debe ser un PDF");
-        }
-    }
-
-    private byte[] leerBytes(MultipartFile archivo) {
-        try {
-            return archivo.getBytes();
-        } catch (IOException e) {
-            throw new BadRequestException("No se pudo leer el archivo");
-        }
     }
 
     private Usuario buscarAlumno(Long alumnoId) {

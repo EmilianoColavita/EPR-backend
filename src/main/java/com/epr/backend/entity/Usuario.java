@@ -55,6 +55,19 @@ public class Usuario {
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
 
+    /**
+     * Se incrementa al cambiar la contraseña. Viaja como claim en el JWT: un token emitido con una
+     * versión anterior deja de ser válido, así que restablecer la contraseña cierra las otras sesiones.
+     */
+    @Column(nullable = false, columnDefinition = "int not null default 0")
+    @Builder.Default
+    private int tokenVersion = 0;
+
+    public void cambiarPassword(String passwordHasheada) {
+        this.password = passwordHasheada;
+        this.tokenVersion++;
+    }
+
     @PrePersist
     public void prePersist() {
         this.fechaRegistro = LocalDateTime.now();

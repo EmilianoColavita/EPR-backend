@@ -11,6 +11,7 @@ import com.epr.backend.mapper.RutinaPdfMapper;
 import com.epr.backend.repository.RutinaPdfRepository;
 import com.epr.backend.repository.UsuarioRepository;
 import com.epr.backend.service.NotificacionService;
+import com.epr.backend.util.ArchivoSubido;
 import com.epr.backend.service.RutinaPdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,14 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RutinaPdfServiceImpl implements RutinaPdfService {
 
-    private static final String CONTENT_TYPE_PDF = "application/pdf";
+    private static final long TAMANIO_MAXIMO_BYTES = 15L * 1024 * 1024;
 
     private final RutinaPdfRepository rutinaPdfRepository;
     private final UsuarioRepository usuarioRepository;
@@ -35,13 +36,14 @@ public class RutinaPdfServiceImpl implements RutinaPdfService {
     @Transactional
     public RutinaPdfResponse subir(Long alumnoId, MultipartFile archivo) {
         Usuario alumno = buscarAlumno(alumnoId);
-        validarArchivo(archivo);
+        ArchivoSubido.Contenido contenido = ArchivoSubido.leerYValidar(
+                archivo, Set.of(ArchivoSubido.PDF), TAMANIO_MAXIMO_BYTES, "El archivo debe ser un PDF");
 
         RutinaPdf rutinaPdf = RutinaPdf.builder()
                 .alumno(alumno)
-                .nombreArchivo(archivo.getOriginalFilename())
-                .contentType(archivo.getContentType())
-                .archivo(leerBytes(archivo))
+                .nombreArchivo(ArchivoSubido.nombreSeguro(archivo.getOriginalFilename(), "rutina.pdf"))
+                .contentType(contenido.contentType())
+                .archivo(contenido.bytes())
                 .build();
 
         RutinaPdfResponse response = RutinaPdfMapper.toResponse(rutinaPdfRepository.save(rutinaPdf));
@@ -55,7 +57,7 @@ public class RutinaPdfServiceImpl implements RutinaPdfService {
     @Override
     public List<RutinaPdfResponse> listarPorAlumno(Long alumnoId) {
         buscarAlumno(alumnoId);
-        return rutinaPdfRepository.findByAlumnoId(alumnoId).stream()
+        return rutinaPdfRepository.listarResumenPorAlumnoId(alumnoId).stream()
                 .map(RutinaPdfMapper::toResponse)
                 .toList();
     }
@@ -77,7 +79,7 @@ public class RutinaPdfServiceImpl implements RutinaPdfService {
 
     @Override
     public List<RutinaPdfResponse> listarMias(String emailAlumno) {
-        return rutinaPdfRepository.findByAlumnoEmail(emailAlumno).stream()
+        return rutinaPdfRepository.listarResumenPorAlumnoEmail(emailAlumno).stream()
                 .map(RutinaPdfMapper::toResponse)
                 .toList();
     }
@@ -92,23 +94,6 @@ public class RutinaPdfServiceImpl implements RutinaPdfService {
         }
 
         return RutinaPdfMapper.toArchivoResponse(rutinaPdf);
-    }
-
-    private void validarArchivo(MultipartFile archivo) {
-        if (archivo == null || archivo.isEmpty()) {
-            throw new BadRequestException("El archivo es requerido");
-        }
-        if (!CONTENT_TYPE_PDF.equalsIgnoreCase(archivo.getContentType())) {
-            throw new BadRequestException("El archivo debe ser un PDF");
-        }
-    }
-
-    private byte[] leerBytes(MultipartFile archivo) {
-        try {
-            return archivo.getBytes();
-        } catch (IOException e) {
-            throw new BadRequestException("No se pudo leer el archivo");
-        }
     }
 
     private Usuario buscarAlumno(Long alumnoId) {
