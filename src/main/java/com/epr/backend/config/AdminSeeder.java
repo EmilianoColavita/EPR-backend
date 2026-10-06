@@ -25,6 +25,10 @@ public class AdminSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (usuarioRepository.count() == 0) {
+            if (adminEmail == null || adminEmail.isBlank() || adminPassword == null || adminPassword.isBlank()) {
+                throw new IllegalStateException(
+                        "La base no tiene usuarios: definí ADMIN_EMAIL y ADMIN_PASSWORD para crear el admin inicial");
+            }
             Usuario admin = Usuario.builder()
                     .nombre("Admin")
                     .apellido("EPR")

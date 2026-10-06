@@ -80,7 +80,7 @@ backup de MySQL incluye todo.
 - [ ] `https://api.epr.com.ar/swagger-ui.html` y `/api-docs` responden **404** (deshabilitados en prod).
 - [ ] El front carga los planes en la home (si no, revisar `NEXT_PUBLIC_API_URL` y CORS/`FRONTEND_URL`).
 - [ ] Login con el admin. Después, cambiale la contraseña con "Olvidé mi contraseña" y sacá
-      `ADMIN_PASSWORD` de las variables (solo se usa cuando la base está vacía).
+      `ADMIN_EMAIL` y `ADMIN_PASSWORD` de las variables (solo se exigen cuando la base está vacía).
 - [ ] "Olvidé mi contraseña" envía el mail y el link apunta al dominio real.
 - [ ] Subir un comprobante desde un alumno y descargarlo desde el admin.
 - [ ] Probar 6 logins fallidos con el mismo email: el 6º tiene que devolver "Demasiados intentos".
