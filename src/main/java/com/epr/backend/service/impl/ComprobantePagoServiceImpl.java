@@ -73,12 +73,16 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
         ArchivoSubido.Contenido contenido = ArchivoSubido.leerYValidar(
                 archivo, CONTENT_TYPES_PERMITIDOS, TAMANIO_MAXIMO_BYTES, "El archivo debe ser PDF, JPG o PNG");
 
-        PlanCuota planCuota = null;
-        if (planCuotaId != null) {
-            planCuota = planCuotaRepository.findById(planCuotaId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Plan de cuota no encontrado"));
+        if (planCuotaId == null) {
+            throw new BadRequestException("Tenés que seleccionar un plan");
+        }
+        PlanCuota planCuota = planCuotaRepository.findById(planCuotaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de cuota no encontrado"));
+        if (!planCuota.isActivo()) {
+            throw new BadRequestException("El plan seleccionado no está activo");
         }
 
+        // El monto sale siempre del precio del plan; el que manda el cliente se ignora.
         ComprobantePago comprobante = ComprobantePago.builder()
                 .alumno(alumno)
                 .nombreArchivo(ArchivoSubido.nombreSeguro(archivo.getOriginalFilename(), "comprobante"))
@@ -86,7 +90,7 @@ public class ComprobantePagoServiceImpl implements ComprobantePagoService {
                 .archivo(contenido.bytes())
                 .fecha(fecha)
                 .planCuota(planCuota)
-                .monto(monto)
+                .monto(planCuota.getPrecio())
                 .estado(EstadoComprobante.PENDIENTE)
                 .build();
 
